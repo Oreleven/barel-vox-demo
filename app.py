@@ -15,23 +15,29 @@ st.markdown("""
 <style>
     .main-header {
         font-size: 2.5rem;
-        color: #E85D04; /* Orange Barel/Ethan */
+        color: #E85D04; /* Orange Barel */
         text-align: center;
         font-weight: bold;
-        margin-bottom: 1rem;
+        margin-bottom: 0.5rem;
         font-family: 'Helvetica Neue', sans-serif;
     }
     .sub-header {
-        font-size: 1.2rem;
-        color: #666;
+        font-size: 1.4rem;
+        color: #444;
         text-align: center;
         margin-bottom: 3rem;
+        font-weight: 300;
     }
     /* Cadre propre autour des avatars */
     .stChatMessage .stChatMessageAvatar {
         border: 2px solid #f0f2f6;
         border-radius: 50%;
         background-color: white;
+    }
+    /* Style pour le statut des agents en sidebar */
+    .agent-status {
+        font-size: 1rem;
+        margin-bottom: 10px;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -59,54 +65,44 @@ if "messages" not in st.session_state:
         "role": "assistant",
         "name": "Avenor",
         "avatar": AVATARS["avenor"],
-        "content": "Bonjour Stéphane. L'équipe du Conseil OEE est au complet et prête à analyser. Veuillez déposer le DCE pour lancer la session."
+        "content": "Bonjour Stéphane. L'équipe du Conseil OEE est prête pour l'audit MOE avant publication. Veuillez déposer le DCE pour lancer le contrôle qualité."
     })
 
 if "analysis_done" not in st.session_state:
     st.session_state.analysis_done = False
 
-# --- SIDEBAR (IDENTITÉ BAREL) ---
+# --- SIDEBAR (PANNEAU DE CONTRÔLE) ---
 with st.sidebar:
     # LOGO BAREL (En haut à gauche)
     if os.path.exists("assets/barel.png"):
-        st.image("assets/barel.png", width=180) # Ajuste la taille si besoin
+        st.image("assets/barel.png", width=150)
     else:
         st.title("🏗️ BAREL VOX")
     
     st.markdown("---")
-    st.markdown("### 🧬 LE CONSEIL OEE")
+    st.markdown("### 🧬 L'ÉQUIPE ACTIVE")
     
-    # Indicateurs de statut (pour faire pro)
-    cols = st.columns([1, 4])
-    with cols[0]: st.write("👀")
-    with cols[1]: st.caption("**Roy** (Vision & OCR)")
-    
-    cols = st.columns([1, 4])
-    with cols[0]: st.write("⚖️")
-    with cols[1]: st.caption("**Liorah** (Juridique)")
-    
-    cols = st.columns([1, 4])
-    with cols[0]: st.write("💎")
-    with cols[1]: st.caption("**Aurivna** (Data & Structure)")
-    
-    cols = st.columns([1, 4])
-    with cols[0]: st.write("🛡️")
-    with cols[1]: st.caption("**Ethan** (Risques)")
-    
-    cols = st.columns([1, 4])
-    with cols[0]: st.write("👑")
-    with cols[1]: st.caption("**Avenor** (Synthèse)")
+    # Liste épurée (comme demandé)
+    st.markdown("**Roy** (Vision) : 🟢 Prêt")
+    st.markdown("**Liorah** (Juridique) : 🟢 Prêt")
+    st.markdown("**Aurivna** (Data) : 🟢 Prêt")
+    st.markdown("**Ethan** (Risques) : 🟢 Prêt")
+    st.markdown("**Avenor** (Synthèse) : 🟢 En ligne")
     
     st.markdown("---")
+    
+    # Bouton Reset
     if st.button("🔄 Nouvelle Analyse"):
         st.session_state.messages = []
         st.session_state.analysis_done = False
         st.rerun()
 
+    # Mention Démo (en bas)
+    st.caption("Mode : Simulation Démo v1.0")
+
 # --- HEADER PRINCIPAL ---
-# On peut mettre le logo Barel ici aussi si tu veux, mais Sidebar c'est mieux
 st.markdown('<div class="main-header">BAREL VOX</div>', unsafe_allow_html=True)
-st.markdown('<div class="sub-header">Analyse Augmentée de DCE par Intelligence Artificielle Distribuée</div>', unsafe_allow_html=True)
+st.markdown('<div class="sub-header">L\'Intelligence Augmentée Multi-Agents au service des Professionnels</div>', unsafe_allow_html=True)
 
 # --- AFFICHAGE DE L'HISTORIQUE CHAT ---
 for msg in st.session_state.messages:
@@ -126,32 +122,28 @@ if uploaded_file and not st.session_state.analysis_done:
     with st.chat_message("user", avatar=AVATARS["user"]):
         st.write(user_msg)
 
-    # 2. Séquence d'analyse (Ralentie pour le réalisme)
-    # On utilise un conteneur vide pour afficher les étapes de chargement
+    # 2. Séquence d'analyse (Rythme lent pour le réalisme)
     status_placeholder = st.empty()
     
     with status_placeholder.status("🚀 Initialisation du protocole OEE...", expanded=True) as status:
         
         # --- PHASE 1 : ROY (Vision) ---
         status.write("👀 Roy : Lecture OCR et extraction des plans...")
-        # Pause réaliste (Lecture du fichier)
-        time.sleep(4) 
+        time.sleep(8) # Pause 8s
         
         msg_roy = "Scan terminé. J'ai extrait 45 pages de texte brut et isolé 3 plans techniques (RDC, R+1, Coupes). La résolution est optimale (300 DPI). Je dispatch les données aux experts."
         st.session_state.messages.append({"role": "assistant", "name": "Roy (Vision)", "avatar": AVATARS["roy"], "content": msg_roy})
-        # Affichage du message dans le chat
         with st.chat_message("assistant", avatar=AVATARS["roy"]):
             st.markdown("**Roy (Vision)**")
             st.write(msg_roy)
             
         # --- PHASE 2 : LIORAH (Juridique) ---
-        status.write("⚖️ Liorah : Analyse contractuelle (CCAP/CCTP)...")
-        # Pause plus longue (Analyse complexe)
-        time.sleep(5)
+        status.write("⚖️ Liorah : Analyse de conformité administrative...")
+        time.sleep(10) # Pause 10s (Lecture contrat)
         
         msg_liorah = """**Rapport Juridique :**
 - ✅ **Conformité** : Les assurances décennales requises sont standards.
-- ⚠️ **Point de Vigilance** : L'article 4.2 du CCAP mentionne des pénalités de retard **non plafonnées**. C'est un risque financier illimité pour l'entreprise.
+- ⚠️ **Point de Vigilance** : L'article 4.2 du CCAP mentionne des pénalités de retard **non plafonnées**. C'est un risque financier illimité pour l'entreprise. **Faire valider par MOA.**
 - ℹ️ **Indexation** : Clause de révision BT01 validée."""
         st.session_state.messages.append({"role": "assistant", "name": "Liorah (Juridique)", "avatar": AVATARS["liorah"], "content": msg_liorah})
         with st.chat_message("assistant", avatar=AVATARS["liorah"]):
@@ -159,14 +151,13 @@ if uploaded_file and not st.session_state.analysis_done:
              st.write(msg_liorah)
 
         # --- PHASE 3 : AURIVNA (Data) ---
-        status.write("💎 Aurivna : Vérification des métrés et normes...")
-        # Pause longue (Calculs)
-        time.sleep(5)
+        status.write("💎 Aurivna : Croisement Plans vs CCTP...")
+        time.sleep(12) # Pause 12s (Calculs complexes)
         
         msg_aurivna = """**Analyse Technique & Data :**
-- 🏗️ **Incohérence Détectée** : Le CCTP Lot Gros Œuvre indique une dalle de 20cm, mais le Plan R+1 mentionne 18cm. À clarifier avant chiffrage.
+- 🏗️ **Incohérence Détectée** : Le CCTP Lot Gros Œuvre indique une dalle de 20cm, mais le Plan R+1 mentionne 23cm. **À clarifier avant envoi.**
 - 📏 **Métrés Automatiques** :
-    - Béton B25 : ~450 m³
+    - Béton C25/30 : ~450 m³
     - Acier HA : ~12.5 tonnes
 - 💾 **Export** : Tableau des quantitatifs généré (Excel)."""
         st.session_state.messages.append({"role": "assistant", "name": "Aurivna (Data)", "avatar": AVATARS["aurivna"], "content": msg_aurivna})
@@ -175,8 +166,8 @@ if uploaded_file and not st.session_state.analysis_done:
              st.write(msg_aurivna)
 
         # --- PHASE 4 : ETHAN (Risques) ---
-        status.write("🛡️ Ethan : Audit des risques et planning...")
-        time.sleep(4)
+        status.write("🛡️ Ethan : Simulation planning et aléas...")
+        time.sleep(8) # Pause 8s
         
         msg_ethan = "Je prends le relais. Analyse Logique : Le planning prévisionnel (6 mois) est trop tendu. Il ne tient pas compte des délais de séchage en période hivernale (Zone B). **Risque critique de glissement : +3 semaines.**"
         st.session_state.messages.append({"role": "assistant", "name": "Ethan (Risques)", "avatar": AVATARS["ethan"], "content": msg_ethan})
@@ -184,21 +175,20 @@ if uploaded_file and not st.session_state.analysis_done:
              st.markdown("**Ethan (Risques)**")
              st.write(msg_ethan)
 
-        status.update(label="✅ Analyse du Conseil terminée", state="complete", expanded=False)
+        status.update(label="✅ Audit du Conseil terminé", state="complete", expanded=False)
 
     # --- PHASE 5 : AVENOR (Synthèse) ---
-    # Petite pause avant la conclusion du chef
-    time.sleep(2)
+    time.sleep(3) # Petite pause dramatique
     
     msg_avenor = """🟠 **SYNTHÈSE DU CONSEIL : VIGILANCE REQUISE**
 
 Stéphane, l'analyse croisée révèle un dossier techniquement solide mais contractuellement risqué.
 
-1.  **Risque Financier (Liorah)** : Il faut impérativement négocier le plafond des pénalités.
-2.  **Incertitude Technique (Aurivna)** : L'épaisseur de dalle (20cm vs 18cm) impacte le prix du béton.
+1.  **Risque Financier (Liorah)** : Il faut impérativement clarifier le plafond des pénalités avec MOA.
+2.  **Incertitude Technique (Aurivna)** : L'épaisseur de dalle (20cm vs 23cm) impacte le prix du béton.
 3.  **Risque Planning (Ethan)** : Le délai est irréaliste en hiver.
 
-**Ma Recommandation :** Ne pas chiffrer sans avoir envoyé une demande de précision (Q/R) au Maître d'Ouvrage sur ces 3 points. Je prépare le brouillon ?"""
+**Ma Recommandation :** Ne pas lancer la publication sans avoir envoyé une demande de précision (Q/R) au Maître d'Ouvrage sur ces 3 points. Je prépare le brouillon ?"""
     
     st.session_state.messages.append({"role": "assistant", "name": "Avenor (Le Chef)", "avatar": AVATARS["avenor"], "content": msg_avenor})
     with st.chat_message("assistant", avatar=AVATARS["avenor"]):
@@ -206,8 +196,6 @@ Stéphane, l'analyse croisée révèle un dossier techniquement solide mais cont
         st.write(msg_avenor)
 
     st.session_state.analysis_done = True
-    # Pas de rerun ici pour laisser l'utilisateur lire tranquillement
-    # st.rerun() 
 
 # --- INPUT UTILISATEUR APRÈS ANALYSE ---
 if st.session_state.analysis_done:
@@ -216,5 +204,5 @@ if st.session_state.analysis_done:
         with st.chat_message("user", avatar=AVATARS["user"]):
             st.write(prompt)
         
-        # Réponse de fin de démo
-        st.write("Avenor : Bien reçu Stéphane. Dossier clôturé.")
+        # Réponse de fin
+        st.write("Avenor : Bien reçu Stéphane. Je génère le document Q/R pour le MOA.")
