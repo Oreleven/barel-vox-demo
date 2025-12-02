@@ -42,12 +42,26 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# --- GESTION DES AVATARS ---
-def get_avatar(filename, fallback_emoji):
-    if os.path.exists(f"assets/{filename}"):
-        return f"assets/{filename}"
+# --- GESTION INTELLIGENTE DES AVATARS (FIX LINUX/MAC) ---
+def get_avatar(base_name, fallback_emoji):
+    # Le serveur Linux est sensible à la casse (Majuscules/Minuscules)
+    # On teste toutes les combinaisons possibles pour trouver l'image
+    possible_names = [
+        base_name,                      # ex: avenor.png
+        base_name.capitalize(),         # ex: Avenor.png
+        base_name.upper(),              # ex: AVENOR.PNG
+        base_name.replace(".png", ".PNG"), # ex: avenor.PNG
+        base_name.capitalize().replace(".png", ".PNG") # ex: Avenor.PNG
+    ]
+    
+    for name in possible_names:
+        if os.path.exists(f"assets/{name}"):
+            return f"assets/{name}"
+            
+    # Si aucune image n'est trouvée, on renvoie l'émoji
     return fallback_emoji
 
+# Dictionnaire de la Team
 AVATARS = {
     "user": "👤",
     "avenor": get_avatar("avenor.png", "👑"),
@@ -73,16 +87,21 @@ if "analysis_done" not in st.session_state:
 
 # --- SIDEBAR (PANNEAU DE CONTRÔLE) ---
 with st.sidebar:
-    # LOGO BAREL (En haut à gauche)
-    if os.path.exists("assets/barel.png"):
-        st.image("assets/barel.png", width=150)
+    # LOGO BAREL (Test variantes aussi)
+    logo_path = None
+    for name in ["barel.png", "Barel.png", "Barel.PNG", "barel.PNG"]:
+        if os.path.exists(f"assets/{name}"):
+            logo_path = f"assets/{name}"
+            break
+            
+    if logo_path:
+        st.image(logo_path, width=150)
     else:
         st.title("🏗️ BAREL VOX")
     
     st.markdown("---")
     st.markdown("### 🧬 L'ÉQUIPE ACTIVE")
     
-    # Liste épurée (comme demandé)
     st.markdown("**Roy** (Vision) : 🟢 Prêt")
     st.markdown("**Liorah** (Juridique) : 🟢 Prêt")
     st.markdown("**Aurivna** (Data) : 🟢 Prêt")
@@ -91,13 +110,11 @@ with st.sidebar:
     
     st.markdown("---")
     
-    # Bouton Reset
     if st.button("🔄 Nouvelle Analyse"):
         st.session_state.messages = []
         st.session_state.analysis_done = False
         st.rerun()
 
-    # Mention Démo (en bas)
     st.caption("Mode : Simulation Démo v1.0")
 
 # --- HEADER PRINCIPAL ---
@@ -122,14 +139,14 @@ if uploaded_file and not st.session_state.analysis_done:
     with st.chat_message("user", avatar=AVATARS["user"]):
         st.write(user_msg)
 
-    # 2. Séquence d'analyse (Rythme lent pour le réalisme)
+    # 2. Séquence d'analyse
     status_placeholder = st.empty()
     
     with status_placeholder.status("🚀 Initialisation du protocole OEE...", expanded=True) as status:
         
         # --- PHASE 1 : ROY (Vision) ---
         status.write("👀 Roy : Lecture OCR et extraction des plans...")
-        time.sleep(8) # Pause 8s
+        time.sleep(8) 
         
         msg_roy = "Scan terminé. J'ai extrait 45 pages de texte brut et isolé 3 plans techniques (RDC, R+1, Coupes). La résolution est optimale (300 DPI). Je dispatch les données aux experts."
         st.session_state.messages.append({"role": "assistant", "name": "Roy (Vision)", "avatar": AVATARS["roy"], "content": msg_roy})
@@ -139,7 +156,7 @@ if uploaded_file and not st.session_state.analysis_done:
             
         # --- PHASE 2 : LIORAH (Juridique) ---
         status.write("⚖️ Liorah : Analyse de conformité administrative...")
-        time.sleep(10) # Pause 10s (Lecture contrat)
+        time.sleep(10)
         
         msg_liorah = """**Rapport Juridique :**
 - ✅ **Conformité** : Les assurances décennales requises sont standards.
@@ -152,7 +169,7 @@ if uploaded_file and not st.session_state.analysis_done:
 
         # --- PHASE 3 : AURIVNA (Data) ---
         status.write("💎 Aurivna : Croisement Plans vs CCTP...")
-        time.sleep(12) # Pause 12s (Calculs complexes)
+        time.sleep(12)
         
         msg_aurivna = """**Analyse Technique & Data :**
 - 🏗️ **Incohérence Détectée** : Le CCTP Lot Gros Œuvre indique une dalle de 20cm, mais le Plan R+1 mentionne 23cm. **À clarifier avant envoi.**
@@ -167,7 +184,7 @@ if uploaded_file and not st.session_state.analysis_done:
 
         # --- PHASE 4 : ETHAN (Risques) ---
         status.write("🛡️ Ethan : Simulation planning et aléas...")
-        time.sleep(8) # Pause 8s
+        time.sleep(8)
         
         msg_ethan = "Je prends le relais. Analyse Logique : Le planning prévisionnel (6 mois) est trop tendu. Il ne tient pas compte des délais de séchage en période hivernale (Zone B). **Risque critique de glissement : +3 semaines.**"
         st.session_state.messages.append({"role": "assistant", "name": "Ethan (Risques)", "avatar": AVATARS["ethan"], "content": msg_ethan})
@@ -178,7 +195,7 @@ if uploaded_file and not st.session_state.analysis_done:
         status.update(label="✅ Audit du Conseil terminé", state="complete", expanded=False)
 
     # --- PHASE 5 : AVENOR (Synthèse) ---
-    time.sleep(3) # Petite pause dramatique
+    time.sleep(3)
     
     msg_avenor = """🟠 **SYNTHÈSE DU CONSEIL : VIGILANCE REQUISE**
 
